@@ -13,6 +13,7 @@
 #pragma link C++ namespace signalana+;
 #pragma link C++ class signalana::Kernel+;
 #pragma link C++ class signalana::Filter+;
+#pragma link C++ class signalana::DeconvolutionTool+;
 //ADD_NEW_CLASS ... do not change this line
 #endif
 

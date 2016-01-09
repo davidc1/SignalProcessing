@@ -1,9 +1,9 @@
 /**
- * \file SignalAnaTool.h
+ * \file DeconvolutionTool.h
  *
  * \ingroup SignalProcessing
  * 
- * \brief Class def header for a class SignalAnaTool
+ * \brief Class def header for a class DeconvolutionTool
  *
  * @author david caratelli
  */
@@ -11,30 +11,31 @@
 /** \addtogroup SignalProcessing
 
     @{*/
-#ifndef SIGNALANA_SIGNALANATOOL_H
-#define SIGNALANA_SIGNALANATOOL_H
+#ifndef SIGNALANA_DECONVOLUTIONTOOL_H
+#define SIGNALANA_DECONVOLUTIONTOOL_H
 
 #include <iostream>
 #include "Kernel.h"
 #include "Filter.h"
+#include "fftw3.h"
 
 /**
-   \class SignalAnaTool
-   User defined class SignalAnaTool ... these comments are used to generate
+   \class DeconvolutionTool
+   User defined class DeconvolutionTool ... these comments are used to generate
    doxygen documentation!
  */
 
 namespace signalana{
   
-  class SignalAnaTool{
+  class DeconvolutionTool{
     
   public:
     
     /// Default constructor
-    SignalAnaTool(){}
+    DeconvolutionTool(){}
     
     /// Default destructor
-    ~SignalAnaTool(){}
+    ~DeconvolutionTool(){}
 
 
   private:
