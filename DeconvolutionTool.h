@@ -32,7 +32,7 @@ namespace signalana{
   public:
     
     /// Default constructor
-    DeconvolutionTool(){}
+    DeconvolutionTool();
     
     /// Default destructor
     ~DeconvolutionTool(){}
@@ -57,7 +57,40 @@ namespace signalana{
     @detail Take input signal and after checking the vector size is
     appropriate then apply the deconvolution.
     */
-    void Deconvolve(const std::vector<double>& sig_v);
+    double* Deconvolve(const std::vector<double>& sig_v, const size_t& channel);
+
+    /**
+       @brief Prepare Kernel vector
+       @detail function to load kernels for the various channels
+     */
+    void LoadKernels(const std::vector<std::vector<double> >& kernel_v);
+
+
+    /**
+       @brief Prepare Filter vector
+       @detail function to load kernels for the various channels
+     */
+    void LoadFilters(const std::vector<std::vector<double> >& filter_v);
+
+    /**
+     @brief setter for debug mode
+     */
+    void setDebug(signalana::MessageLevel_t debug) { _debug = debug; }
+
+    /**
+       @brief kernel getter
+    */
+    const signalana::Kernel& kernel(const int& n);
+
+    /**
+       @brief filter getter
+    */
+    const signalana::Filter& filter(const int& n);
+
+    /**
+       @brief tick number getter
+    */
+    const int N() { return _N; }
 
 
   private:
@@ -84,6 +117,18 @@ namespace signalana{
 
     // the size of the signal expected by this instance of DeconvolutionTool
     int _N;
+
+    // vector of kernels to be used by the tool instance
+    std::vector<signalana::Kernel> _kernel_v;
+
+    // vector of filters to be used by the tool instance
+    std::vector<signalana::Filter> _filter_v;
+
+    // debug variable
+    signalana::MessageLevel_t _debug;
+
+    // instance of timer class to profile
+    signalana::Watch _watch;
     
   };
 

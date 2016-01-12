@@ -25,12 +25,15 @@
 
 namespace signalana{
   
-  class Filter{
+  class Filter : public std::vector<double> {
     
   public:
     
     /// Default constructor
     Filter(){}
+
+    /// Kernel constructor w/ freq-domain vector initializer
+    Filter(const std::vector<double>& time_v);
     
     /// Default destructor
     ~Filter (){}
@@ -40,14 +43,15 @@ namespace signalana{
      */
     void Clear();
 
+    /**
+       @brief Set channel for this filter
+     */
+    void setChannel(size_t ch) { _channel = ch; }
+
   private:
     
     // channel this kernel is for
     size_t _channel;
-    // time-domain kernel information
-    std::vector<double> _time_array;
-    // freq-domain kernel information
-    
     
   };
 

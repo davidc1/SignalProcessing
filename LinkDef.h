@@ -14,8 +14,14 @@
 #pragma link C++ class signalana::Kernel+;
 #pragma link C++ class signalana::Filter+;
 #pragma link C++ class signalana::DeconvolutionTool+;
+#pragma link C++ class signalana::DecoInterface+;
+#pragma link C++ class larlite::Deco+;
+#pragma link C++ class SignalProcessingUtil+;
 //ADD_NEW_CLASS ... do not change this line
 #endif
+
+
+
 
 
 

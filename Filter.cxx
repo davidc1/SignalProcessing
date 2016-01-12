@@ -5,9 +5,12 @@
 
 namespace signalana{
 
+  Filter::Filter(const std::vector<double>& time_v)
+    : std::vector<double>(time_v)
+  {}
+
   void Filter::Clear(){
     
-    _time_array.clear();
     _channel = -1;
 
     return;
