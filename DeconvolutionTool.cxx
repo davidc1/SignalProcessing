@@ -58,8 +58,8 @@ namespace signalana{
     for (int n=0; n < _N/2+1; n++){
       // numerator   = a + ib
       // denominator = c + id
-      double c = _kernel_v[pmt].real(n)+5; // 5 is for padding
-      double d = _kernel_v[pmt].imag(n);
+      double c = _kernel_v[28].real(n)+5; // 5 is for padding
+      double d = _kernel_v[28].imag(n);
       double a = _sigfft[n][0];
       double b = _sigfft[n][1];
 
@@ -70,24 +70,29 @@ namespace signalana{
       if (den != 0){
 	double e = (a*c+b*d)/den;
 	double f = (b*c-a*d)/den;
-	_sigfft[n][0] = e * _filter_v[pmt][n];
-	_sigfft[n][1] = f * _filter_v[pmt][n];
+	_sigfft[n][0] = e * _filter_v[28][n];
+	_sigfft[n][1] = f * _filter_v[28][n];
 	//if (n <_filter_v[pmt].size()){
 	// _sigfft[n][0] *= _filter_v[pmt][n];
 	// _sigfft[n][1] *= _filter_v[pmt][n];
 	//}
       }
       
-      power_end += sqrt( _sigfft[n][0]*_sigfft[n][0] + _sigfft[n][1]*_sigfft[n][1] ) * _filter_v[pmt][n];
+      power_end += sqrt( _sigfft[n][0]*_sigfft[n][0] + _sigfft[n][1]*_sigfft[n][1] ) * _filter_v[28][n];
 
     }// for all ticks -> applying division
     
     // now apply the inverse fft to obtain the deconvolved signal
     fftw_execute(_inverse_fft);
 
+    //if (_debug == signalana::MessageLevel_t::kDEBUG)
+    //  std::cout << "Modulating power spectrum for PMT " << pmt << " by a factor of " << power_start/power_end << std::endl;
+
     // now scale by the loss in power
     for (int n=0; n < _N; n++)
-      _processed[n] *= (power_start/ (power_end*_N) );
+      //  _processed[n] *= (power_start/ (power_end*_N) );
+    //_processed[n] /= _N;
+      _processed[n] *= (30./_N);
 
     // normalize
     //for (int n=0; n < _N; n++)

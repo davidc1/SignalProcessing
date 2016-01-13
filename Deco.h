@@ -49,6 +49,9 @@ namespace larlite {
     // set file path for filters
     void setFilterFile(std::string s) { _wiener_filter_file = s; }
 
+    // set the number of ticks to be used for the FFT
+    void setNumTicks(int n) { _Nticks = n; }
+
   protected:
 
     signalana::DecoInterface _deco_tool;
@@ -61,6 +64,9 @@ namespace larlite {
 
     // file where to find filters
     std::string _wiener_filter_file;
+
+    // size of array to be used for FFT computations
+    int _Nticks;
 
     // time profiling tool
     signalana::Watch _decoLL_time;

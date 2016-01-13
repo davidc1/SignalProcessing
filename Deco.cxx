@@ -14,15 +14,19 @@ namespace larlite {
 
     _fout = 0;
     _name = "Deco";
-    _prod_name = "pmt_xmit";
+    _prod_name = "pmtreadout";
+    _Nticks = 2048;
+    _spe_kernel_file = "";
+    _wiener_filter_file = "";
+    
 
   }
 
   bool Deco::initialize() {
-
+    
     // initialize deconvolution tool
-    _deco_tool.PrepareFFTW3(1501);
-    _deco_tool.Initialize(1501);
+    _deco_tool.PrepareFFTW3(_Nticks);
+    _deco_tool.Initialize(_Nticks);
 
     // load kernels
     std::vector< std::vector<double> > spe_kernels;
@@ -47,7 +51,7 @@ namespace larlite {
     TFile *f_filter = new TFile(_wiener_filter_file.c_str());
     for (int pmt=0; pmt < 32; pmt++){
       TH1D* h = (TH1D*)f_filter->Get(Form("hFilter_pmt%02i",pmt));
-      std::vector<double> filter(1501/2+1,0.);
+      std::vector<double> filter(2048/2+1,0.);
       for (int i=0; i < h->GetNbinsX(); i++)
 	filter[i] = h->GetBinContent(i+1);
       wiener_filters.push_back(filter);

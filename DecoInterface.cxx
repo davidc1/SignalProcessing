@@ -13,12 +13,11 @@ namespace signalana {
   ::larlite::opdetwaveform DecoInterface::Deconvolve(const ::larlite::opdetwaveform& wf){
 
     // copy vector of shorts into a vector of doubles
-    std::vector<double> signal;
-    std::copy(wf.begin(), wf.end(), std::back_inserter(signal));
+    std::vector<double> signal(N(),0.);
+    for (int n=0; n < wf.size(); n++)
+      signal[n] = (double)wf[n]-2048;
+    //std::copy(wf.begin(), wf.end(), std::back_inserter(signal));
     
-    for (size_t i=0; i < signal.size(); i++)
-      signal[i] -= 2048;
-
     _deco_time.Start();
     auto processed_wf = ::signalana::DeconvolutionTool::Deconvolve(signal,(size_t)wf.ChannelNumber());
     _deco_time.Add(_deco_time.WallTime());
