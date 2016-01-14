@@ -74,6 +74,26 @@ namespace signalana {
     double _tot_time;
     int    _tot_calls;
   };
+
+  /// Exception class for signalana
+  class SignalAnaException : public std::exception {
+  public:
+    /// default ctor 
+    SignalAnaException(std::string msg="") : std::exception()
+    {
+      _msg  = "\033[93m";
+      _msg += msg;
+      _msg += "\033[00m";
+    }
+    /// default dtor
+    virtual ~SignalAnaException() throw(){};
+    /// override msg passer
+    virtual const char* what() const throw()
+    { return _msg.c_str(); }
+    
+  private:
+    std::string _msg;
+  };
   
 }
 

@@ -24,8 +24,12 @@ my_proc.set_ana_output_file("deco_ana.root")
 
 deconvolution_tool_beam = signalana.DecoInterface()
 deconvolution_tool_beam.setDebug(3)
+deconvolution_tool_beam.setBaseline(2048)
+deconvolution_tool_beam.setPMTNum(32)
 deconvolution_tool_cosmic = signalana.DecoInterface()
 deconvolution_tool_cosmic.setDebug(3)
+deconvolution_tool_cosmic.setBaseline(2048)
+deconvolution_tool_cosmic.setPMTNum(32)
 
 deco = fmwk.Deco()
 deco.setProducer("saturation");

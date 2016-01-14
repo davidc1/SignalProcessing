@@ -14,9 +14,8 @@ namespace signalana {
 
     // copy vector of shorts into a vector of doubles
     std::vector<double> signal(N(),0.);
-    for (int n=0; n < wf.size(); n++)
-      signal[n] = (double)wf[n]-2048;
-    //std::copy(wf.begin(), wf.end(), std::back_inserter(signal));
+    for (size_t n=0; n < wf.size(); n++)
+      signal[n] = (double)wf[n]-_baseline;
     
     _deco_time.Start();
     auto processed_wf = ::signalana::DeconvolutionTool::Deconvolve(signal,(size_t)wf.ChannelNumber());
@@ -42,7 +41,7 @@ namespace signalana {
 
       // save time-domain kernel wf
       int size = k.size();
-      TH1D* hKernelTime = new TH1D(Form("hKernelTime_%02i",pmt),Form("kernel for pmt ",pmt),size,0,size);
+      TH1D* hKernelTime = new TH1D(Form("hKernelTime_%02i",pmt),Form("kernel for pmt %02i",pmt),size,0,size);
       for (int n=0; n < size; n++)
 	hKernelTime->SetBinContent(n+1,k[n]);
       hKernelTime->Write();
@@ -50,8 +49,8 @@ namespace signalana {
 
       // save freq-domain kernel info
       int nfreq = N()/2+1;
-      TH1D* hKernelFreqReal = new TH1D(Form("hKernelFreqReal_%02i",pmt),Form("kernel for pmt ",pmt),nfreq,0,nfreq);
-      TH1D* hKernelFreqImag = new TH1D(Form("hKernelFreqImag_%02i",pmt),Form("kernel for pmt ",pmt),nfreq,0,nfreq);
+      TH1D* hKernelFreqReal = new TH1D(Form("hKernelFreqReal_%02i",pmt),Form("kernel for pmt %02i",pmt),nfreq,0,nfreq);
+      TH1D* hKernelFreqImag = new TH1D(Form("hKernelFreqImag_%02i",pmt),Form("kernel for pmt %02i",pmt),nfreq,0,nfreq);
       for (int n=0; n < nfreq; n++){
 	double r = k.real(n);
 	double i = k.imag(n);
@@ -80,7 +79,7 @@ namespace signalana {
 
       // save time-domain kernel wf
       int size = f.size();
-      TH1D* hFilterTime = new TH1D(Form("hFilter_%02i",pmt),Form("filter for pmt ",pmt),size,0,size);
+      TH1D* hFilterTime = new TH1D(Form("hFilter_%02i",pmt),Form("filter for pmt %02i",pmt),size,0,size);
       for (int n=0; n < size; n++)
 	hFilterTime->SetBinContent(n+1,f[n]);
       hFilterTime->Write();

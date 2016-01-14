@@ -31,7 +31,7 @@ namespace signalana {
   public:
 
     /// Default constructor
-  DecoInterface() : DeconvolutionTool() {}
+  DecoInterface() : DeconvolutionTool() { _baseline = 2048; _pmt_num = 32; }
     
     /// Default destructor
     virtual ~DecoInterface() {}
@@ -51,6 +51,13 @@ namespace signalana {
     /// function to report profiling time
     double ReportTime() { return _deco_time.ReportTime(); }
 
+    /// set baseline
+    void setBaseline(double d) { _baseline = d; }
+
+    /// set number of PMTs
+    void setPMTNum(int n) { _pmt_num = n; }
+
+
   protected:
 
     // waveform to store the signal that will be processed by base class
@@ -61,6 +68,12 @@ namespace signalana {
 
     // time profiling tool
     signalana::Watch _deco_time;
+
+    // baseline to be subtracted from signals
+    double _baseline;
+    
+    // number of PMTs
+    int _pmt_num;
     
   };
 }

@@ -7,10 +7,13 @@ namespace signalana{
 
   DeconvolutionTool::DeconvolutionTool(){
     
-    _debug = signalana::MessageLevel_t::kDEBUG;
+    _debug = signalana::MessageLevel_t::kNORMAL;
   }
 
   void DeconvolutionTool::PrepareFFTW3(const int& N){
+
+    if (_debug == signalana::MessageLevel_t::kINFO)
+      std::cout << "[function : PrepareFFTW3] -> about to allocate memory for arrays and prepare FFTW plans..." << std::endl;
 
     _N = N;
     
@@ -22,10 +25,16 @@ namespace signalana{
 
     _inverse_fft = fftw_plan_dft_c2r_1d(N,_sigfft,_processed,FFTW_MEASURE);
 
+    if (_debug == signalana::MessageLevel_t::kINFO)
+      std::cout << "[function : PrepareFFTW3] -> ...done" << std::endl;
+
     return;
   }
 
   void DeconvolutionTool::ResetFFTW3(){
+
+    if (_debug == signalana::MessageLevel_t::kINFO)
+      std::cout << "[function : ResetFFTW3] -> clearing FFTW3 memory/plans..." << std::endl;
     
     fftw_free(_signal);
     fftw_free(_sigfft);
@@ -34,13 +43,16 @@ namespace signalana{
     fftw_destroy_plan(_forward_fft);
     fftw_destroy_plan(_inverse_fft);
 
+    if (_debug == signalana::MessageLevel_t::kINFO)
+      std::cout << "[function : ResetFFTW3] -> ...done" << std::endl;
+
     return;
   }
 
   double* DeconvolutionTool::Deconvolve(const std::vector<double>& sig_v, const size_t& pmt){
 
-    if (sig_v.size() != _N){
-      std::cout << "input vector size different than what this instance of the deconvolution tool is ready to handle" << std::endl;
+    if ((int)sig_v.size() != _N){
+      throw SignalAnaException("input vector size different than what this instance of the deconvolution tool is ready to handle");
       return _processed;
     }
 
@@ -49,54 +61,34 @@ namespace signalana{
     // obtain the FT of this signal waveform
     fftw_execute(_forward_fft);
 
-    // estimate the power of the FFT of the raw/output signal
-    double power_start = 0.;
-    double power_end   = 0.;
-
     // now apply complex division between the FFTs of the signal and kernel
     // _sigfft contains the signal's fft
     for (int n=0; n < _N/2+1; n++){
       // numerator   = a + ib
       // denominator = c + id
-      double c = _kernel_v[pmt].real(n)+5; // 5 is for padding
+      double c = _kernel_v[pmt].real(n); // 5 is for padding
       double d = _kernel_v[pmt].imag(n);
       double a = _sigfft[n][0];
       double b = _sigfft[n][1];
 
       double den = c*c+d*d;
 
-      power_start += sqrt(den);
-
       if (den != 0){
 	double e = (a*c+b*d)/den;
 	double f = (b*c-a*d)/den;
 	_sigfft[n][0] = e * _filter_v[pmt][n];
 	_sigfft[n][1] = f * _filter_v[pmt][n];
-	//if (n <_filter_v[pmt].size()){
-	// _sigfft[n][0] *= _filter_v[pmt][n];
-	// _sigfft[n][1] *= _filter_v[pmt][n];
-	//}
       }
       
-      power_end += sqrt( _sigfft[n][0]*_sigfft[n][0] + _sigfft[n][1]*_sigfft[n][1] ) * _filter_v[pmt][n];
-
     }// for all ticks -> applying division
     
     // now apply the inverse fft to obtain the deconvolved signal
     fftw_execute(_inverse_fft);
 
-    //if (_debug == signalana::MessageLevel_t::kDEBUG)
-    //  std::cout << "Modulating power spectrum for PMT " << pmt << " by a factor of " << power_start/power_end << std::endl;
-
     // now scale by the loss in power
     for (int n=0; n < _N; n++)
-      //  _processed[n] *= (power_start/ (power_end*_N) );
-    //_processed[n] /= _N;
       _processed[n] *= (30./_N);
 
-    // normalize
-    //for (int n=0; n < _N; n++)
-    //  _processed[n] /= _N;
     return _processed;
   }
 
@@ -121,11 +113,11 @@ namespace signalana{
       // 2) fill the signal vector with the padded kernel
       if (_debug == signalana::MessageLevel_t::kDEBUG)
 	std::cout << "[function : LoadKernels] -> pad kernel" << std::endl;
-      for (size_t n=0; n < _N; n++){
+      for (int n=0; n < _N; n++){
 	// if we are still in the falling-edge of the kernel -> add it to front of _signal
 	if ( (max_tick+n) < k.size() ) { _signal[n] = k[max_tick+n]; }
 	// if we are in the rising edge of the kernel -> add to the end of _signal
-	else if (n <= max_tick) { _signal[n] = k[n]; }
+	else if (n <= (int)max_tick) { _signal[n] = k[n]; }
 	// otherwise, pad w/ zeros
 	else { _signal[n] = 0.; }
       }// fill the _signal vector
@@ -159,8 +151,8 @@ namespace signalana{
 
   const signalana::Kernel& DeconvolutionTool::kernel(const int& n){
 
-    if (n >= _kernel_v.size()){
-      std::cout << "ERROR: asking for a kernel channel that is not stored." << std::endl;
+    if (n >= (int)_kernel_v.size()){
+      throw SignalAnaException("ERROR: asking for a kernel channel that is not stored.");
       return signalana::Kernel();
     }
 
@@ -169,8 +161,8 @@ namespace signalana{
 
   const signalana::Filter& DeconvolutionTool::filter(const int& n){
 
-    if (n >= _filter_v.size()){
-      std::cout << "ERROR: asking for a filter channel that is not stored." << std::endl;
+    if (n >= (int)_filter_v.size()){
+      throw SignalAnaException("ERROR: asking for a filter channel that is not stored.");
       return signalana::Filter();
     }
 

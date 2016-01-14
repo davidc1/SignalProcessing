@@ -133,6 +133,9 @@ namespace larlite {
 
   bool Deco::finalize() {
 
+    _deco_tool_beam.ResetFFTW3();
+    _deco_tool_cosmic.ResetFFTW3();
+
     std::cout << "Time for each LL Deconvolution function call [beam]   : " << _decoLL_time_beam.ReportTime()*1.e6 << " [usec]" << std::endl;
     std::cout << "Time for each Deconvolution function call    [beam]   : " << _deco_tool_beam.ReportTime()*1.e6 << " [usec]" << std::endl;
     std::cout << "Time for each LL Deconvolution function call [cosmic] : " << _decoLL_time_cosmic.ReportTime()*1.e6 << " [usec]" << std::endl;

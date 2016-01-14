@@ -33,7 +33,7 @@ namespace signalana{
     return;
   }
 
-  const double Kernel::real(const int& n){
+  double Kernel::real(const int& n){
     
     if (n >= _N){
       std::cout << "Error: accessing element not stored in Kernel's FFT" << std::endl;
@@ -43,7 +43,7 @@ namespace signalana{
     return _freq_space[n][0];
   }
 
-  const double Kernel::imag(const int& n){
+  double Kernel::imag(const int& n){
     
     if (n >= _N){
       std::cout << "Error: accessing element not stored in Kernel's FFT" << std::endl;

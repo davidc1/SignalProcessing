@@ -57,8 +57,8 @@ namespace signalana{
     /**
        @brief getter for kernel's fft values
      */
-    const double real(const int& n);
-    const double imag(const int& n);
+    double real(const int& n);
+    double imag(const int& n);
 
   private:
     

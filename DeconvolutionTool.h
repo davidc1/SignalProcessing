@@ -90,7 +90,7 @@ namespace signalana{
     /**
        @brief tick number getter
     */
-    const int N() { return _N; }
+    int N() { return _N; }
 
 
   private:
