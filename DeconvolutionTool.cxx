@@ -58,8 +58,8 @@ namespace signalana{
     for (int n=0; n < _N/2+1; n++){
       // numerator   = a + ib
       // denominator = c + id
-      double c = _kernel_v[28].real(n)+5; // 5 is for padding
-      double d = _kernel_v[28].imag(n);
+      double c = _kernel_v[pmt].real(n)+5; // 5 is for padding
+      double d = _kernel_v[pmt].imag(n);
       double a = _sigfft[n][0];
       double b = _sigfft[n][1];
 
@@ -70,15 +70,15 @@ namespace signalana{
       if (den != 0){
 	double e = (a*c+b*d)/den;
 	double f = (b*c-a*d)/den;
-	_sigfft[n][0] = e * _filter_v[28][n];
-	_sigfft[n][1] = f * _filter_v[28][n];
+	_sigfft[n][0] = e * _filter_v[pmt][n];
+	_sigfft[n][1] = f * _filter_v[pmt][n];
 	//if (n <_filter_v[pmt].size()){
 	// _sigfft[n][0] *= _filter_v[pmt][n];
 	// _sigfft[n][1] *= _filter_v[pmt][n];
 	//}
       }
       
-      power_end += sqrt( _sigfft[n][0]*_sigfft[n][0] + _sigfft[n][1]*_sigfft[n][1] ) * _filter_v[28][n];
+      power_end += sqrt( _sigfft[n][0]*_sigfft[n][0] + _sigfft[n][1]*_sigfft[n][1] ) * _filter_v[pmt][n];
 
     }// for all ticks -> applying division
     

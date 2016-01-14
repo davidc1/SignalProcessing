@@ -47,14 +47,21 @@ namespace larlite {
     void setSPEKernelFile(std::string s) { _spe_kernel_file = s; }
 
     // set file path for filters
-    void setFilterFile(std::string s) { _wiener_filter_file = s; }
+    void setFilterFileBeam(std::string s)   { _wiener_filter_file_beam = s; }
+    void setFilterFileCosmic(std::string s) { _wiener_filter_file_cosmic = s; }
 
     // set the number of ticks to be used for the FFT
-    void setNumTicks(int n) { _Nticks = n; }
+    void setNumTicksBeam(int n)   { _Nticks_beam = n; }
+    void setNumTicksCosmic(int n) { _Nticks_cosmic = n; }
+
+    // set the deco tool instace to be used
+    void setDecoToolBeam(signalana::DecoInterface d)   { _deco_tool_beam = d; }
+    void setDecoToolCosmic(signalana::DecoInterface d) { _deco_tool_cosmic = d; }
 
   protected:
 
-    signalana::DecoInterface _deco_tool;
+    signalana::DecoInterface _deco_tool_beam;
+    signalana::DecoInterface _deco_tool_cosmic;
 
     // producer name of fifo data-product
     std::string _prod_name;
@@ -63,13 +70,16 @@ namespace larlite {
     std::string _spe_kernel_file;
 
     // file where to find filters
-    std::string _wiener_filter_file;
+    std::string _wiener_filter_file_beam;
+    std::string _wiener_filter_file_cosmic;
 
     // size of array to be used for FFT computations
-    int _Nticks;
+    int _Nticks_beam;
+    int _Nticks_cosmic;
 
     // time profiling tool
-    signalana::Watch _decoLL_time;
+    signalana::Watch _decoLL_time_beam;
+    signalana::Watch _decoLL_time_cosmic;
 
   };
 }

@@ -15,9 +15,11 @@ namespace larlite {
     _fout = 0;
     _name = "Deco";
     _prod_name = "pmtreadout";
-    _Nticks = 2048;
+    _Nticks_beam = 2048;
+    _Nticks_cosmic = 256;
     _spe_kernel_file = "";
-    _wiener_filter_file = "";
+    _wiener_filter_file_beam = "";
+    _wiener_filter_file_cosmic = "";
     
 
   }
@@ -25,8 +27,12 @@ namespace larlite {
   bool Deco::initialize() {
     
     // initialize deconvolution tool
-    _deco_tool.PrepareFFTW3(_Nticks);
-    _deco_tool.Initialize(_Nticks);
+    // cosmic window
+    _deco_tool_cosmic.PrepareFFTW3(_Nticks_cosmic);
+    _deco_tool_cosmic.Initialize(_Nticks_cosmic);
+    // beam-gate window
+    _deco_tool_beam.PrepareFFTW3(_Nticks_beam);
+    _deco_tool_beam.Initialize(_Nticks_beam);
 
     // load kernels
     std::vector< std::vector<double> > spe_kernels;
@@ -44,23 +50,41 @@ namespace larlite {
       delete hvals;
       delete hnorm;
     }
-    _deco_tool.LoadKernels(spe_kernels);
+    delete f_kernel;
+    _deco_tool_beam.LoadKernels(spe_kernels);
+    _deco_tool_cosmic.LoadKernels(spe_kernels);
 
     // load filters
-    std::vector< std::vector<double> > wiener_filters;
-    TFile *f_filter = new TFile(_wiener_filter_file.c_str());
+    // cosmic window
+    std::vector< std::vector<double> > wiener_filters_cosmic;
+    TFile *f_filter_cosmic = new TFile(_wiener_filter_file_cosmic.c_str());
     for (int pmt=0; pmt < 32; pmt++){
-      TH1D* h = (TH1D*)f_filter->Get(Form("hFilter_pmt%02i",pmt));
-      std::vector<double> filter(2048/2+1,0.);
+      TH1D* h = (TH1D*)f_filter_cosmic->Get(Form("hFilterCosmicDiscriminator_pmt%02i",pmt));
+      std::vector<double> filter(_Nticks_cosmic/2+1,0.);
       for (int i=0; i < h->GetNbinsX(); i++)
 	filter[i] = h->GetBinContent(i+1);
-      wiener_filters.push_back(filter);
+      wiener_filters_cosmic.push_back(filter);
       delete h;
     }
-    _deco_tool.LoadFilters(wiener_filters);
+    delete f_filter_cosmic;
+    _deco_tool_cosmic.LoadFilters(wiener_filters_cosmic);
+    // beam-gate window
+    std::vector< std::vector<double> > wiener_filters_beam;
+    TFile *f_filter_beam = new TFile(_wiener_filter_file_beam.c_str());
+    for (int pmt=0; pmt < 32; pmt++){
+      TH1D* h = (TH1D*)f_filter_beam->Get(Form("hFilter_pmt%02i",pmt));
+      std::vector<double> filter(_Nticks_beam/2+1,0.);
+      for (int i=0; i < h->GetNbinsX(); i++)
+	filter[i] = h->GetBinContent(i+1);
+      wiener_filters_beam.push_back(filter);
+      delete h;
+    }
+    delete f_filter_beam;
+    _deco_tool_beam.LoadFilters(wiener_filters_beam);
 
     // reset time-profiling tools
-    _decoLL_time.Reset();
+    _decoLL_time_beam.Reset();
+    _decoLL_time_cosmic.Reset();
 
     return true;
   }
@@ -83,13 +107,23 @@ namespace larlite {
       
       auto const& wf = ev_wfs->at(n);
 
-      if ( (wf.ChannelNumber() >= 32) or (wf.size() < 500) )
+      if ( wf.ChannelNumber() >= 32 )
 	continue;
 
-      _decoLL_time.Start();
-      auto wfout = _deco_tool.Deconvolve(wf);
-      _decoLL_time.Add(_decoLL_time.WallTime());
-      ev_wfs_out->push_back(wfout);
+      // beam-gate waveforms
+      if (wf.size() > 256){
+	_decoLL_time_beam.Start();
+	auto wfout = _deco_tool_beam.Deconvolve(wf);
+	_decoLL_time_beam.Add(_decoLL_time_beam.WallTime());
+	ev_wfs_out->push_back(wfout);
+      }
+      // cosmic discriminator waveforms
+      else {
+	_decoLL_time_cosmic.Start();
+	auto wfout = _deco_tool_cosmic.Deconvolve(wf);
+	_decoLL_time_cosmic.Add(_decoLL_time_cosmic.WallTime());
+	ev_wfs_out->push_back(wfout);
+      }
 
     }// for all pmt waveforms
   
@@ -99,11 +133,13 @@ namespace larlite {
 
   bool Deco::finalize() {
 
-    std::cout << "Time for each LL Deconvolution function call : " << _decoLL_time.ReportTime()*1.e6 << " [usec]" << std::endl;
-    std::cout << "Time for each Deconvolution function call    : " << _deco_tool.ReportTime()*1.e6 << " [usec]" << std::endl;
+    std::cout << "Time for each LL Deconvolution function call [beam]   : " << _decoLL_time_beam.ReportTime()*1.e6 << " [usec]" << std::endl;
+    std::cout << "Time for each Deconvolution function call    [beam]   : " << _deco_tool_beam.ReportTime()*1.e6 << " [usec]" << std::endl;
+    std::cout << "Time for each LL Deconvolution function call [cosmic] : " << _decoLL_time_cosmic.ReportTime()*1.e6 << " [usec]" << std::endl;
+    std::cout << "Time for each Deconvolution function call    [cosmic] : " << _deco_tool_cosmic.ReportTime()*1.e6 << " [usec]" << std::endl;
 
-    _deco_tool.writeKernels(_fout);
-    _deco_tool.writeFilters(_fout);
+    _deco_tool_beam.writeKernels(_fout);
+    _deco_tool_cosmic.writeFilters(_fout);
 
   
     return true;
