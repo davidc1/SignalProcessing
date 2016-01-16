@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <vector>
+#include "Channel.h"
 
 /**
    \class Filter
@@ -25,7 +26,8 @@
 
 namespace signalana{
   
-  class Filter : public std::vector<double> {
+  class Filter : public std::vector<double>,
+                 public Channel {
     
   public:
     
@@ -38,20 +40,7 @@ namespace signalana{
     /// Default destructor
     ~Filter (){}
 
-    /**
-       Function to clear object
-     */
-    void Clear();
-
-    /**
-       @brief Set channel for this filter
-     */
-    void setChannel(size_t ch) { _channel = ch; }
-
   private:
-    
-    // channel this kernel is for
-    size_t _channel;
     
   };
 

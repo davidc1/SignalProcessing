@@ -17,6 +17,7 @@
 #include <iostream>
 #include <vector>
 #include "SignalAnaTypes.h"
+#include "Channel.h"
 
 /**
    \class Kernel
@@ -26,7 +27,8 @@
 
 namespace signalana{
   
-  class Kernel : public std::vector<double>{
+  class Kernel : public std::vector<double>,
+                 public Channel {
     
   public:
     
@@ -40,14 +42,9 @@ namespace signalana{
     ~Kernel(){}
 
     /**
-       Function to clear object
+       @brief clear Kernel information
      */
     void Clear();
-
-    /**
-       @brief Set channel for this kernel
-    */
-    void setChannel(size_t ch) { _channel = ch; }
 
     /**
        @brief fill freq-space information for kernel
@@ -62,13 +59,8 @@ namespace signalana{
 
   private:
     
-    // channel this kernel is for
-    size_t _channel;
     // freq-domain kernel information
-    fftw_complex *_freq_space;
-    // fft size:
-    int _N;
-    //std::vector<fftw_complex> _freq_space;
+    complex *_freq_space;
     
   };
 

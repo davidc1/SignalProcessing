@@ -18,8 +18,10 @@
 #pragma link C++ class signalana::DecoInterface+;
 #pragma link C++ class larlite::Deco+;
 #pragma link C++ class SignalProcessingUtil+;
+#pragma link C++ class Channel+;
 //ADD_NEW_CLASS ... do not change this line
 #endif
+
 
 
 

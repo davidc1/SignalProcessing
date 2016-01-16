@@ -9,13 +9,6 @@ namespace signalana{
     : std::vector<double>(time_v)
   {}
 
-  void Filter::Clear(){
-    
-    _channel = -1;
-
-    return;
-  }
-
 }
 
 #endif

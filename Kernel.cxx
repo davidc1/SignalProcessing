@@ -12,7 +12,6 @@ namespace signalana{
   void Kernel::Clear(){
     
     this->clear();
-    _channel = -1;
 
     return;
   }
@@ -28,14 +27,14 @@ namespace signalana{
       }
     }
 
-    _N = N;
+    _samples = N;
     
     return;
   }
 
   double Kernel::real(const int& n){
     
-    if (n >= _N){
+    if (n >= _samples){
       std::cout << "Error: accessing element not stored in Kernel's FFT" << std::endl;
       return -1;
     }
@@ -45,7 +44,7 @@ namespace signalana{
 
   double Kernel::imag(const int& n){
     
-    if (n >= _N){
+    if (n >= _samples){
       std::cout << "Error: accessing element not stored in Kernel's FFT" << std::endl;
       return -1;
     }

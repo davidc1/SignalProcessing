@@ -5,29 +5,23 @@
 
 namespace signalana{
 
-  FilterFactory::FilterFactory(const int& samples, const double& sampling_rate){
-
-    _sampling_rate = sampling_rate;
-    _samples       = samples;
-    _nyquist       = _sampling_rate/2.;
-    _minfreq       = 2*_sampling_rate/_samples;
-
-  }
-
 
   void FilterFactory::LoadVectorFilter(const std::vector<double>& filter_vals,
 				       signalana::Filter& filter){
+
+    // fft ticks
+    int ticks = filter.getSamples()/2+1;
     
     // first check that the vector size is consistent
     // with the number of time-samples being used
-    if ((int)filter_vals.size() != _samples/2+1)
+    if ((int)filter_vals.size() != ticks)
       throw SignalAnaException("input vector size different than what this instance of the deconvolution tool is ready to handle");
 
     // check that the filter we are about to fill is also consistent
-    if ((int)filter.size() != _samples/2+1)
+    if ((int)filter.size() != ticks)
       throw SignalAnaException("input vector size different than what this instance of the deconvolution tool is ready to handle");
 
-    for (int f=0; f < _samples/2+1; f++)
+    for (int f=0; f < ticks; f++)
       filter[f] *= filter_vals[f];
 
     return;
@@ -37,14 +31,21 @@ namespace signalana{
   void FilterFactory::GaussLowPassFilter(const double& mu, const double& sigma,
 					 signalana::Filter& filter){
 
+    // fft ticks
+    int ticks = filter.getSamples()/2+1;
+    // nyquist frequency
+    double nyquist = filter.getSamplingFrequency()/2;
+    // minimum frequency
+    double minfreq = filter.getSamplingFrequency()*2/filter.getSamples();
+
     // first check that the vector size is consistent
     // with the number of time-samples being used
-    if ((int)filter.size() != _samples/2+1)
+    if ((int)filter.size() != ticks)
       throw SignalAnaException("input vector size different than what this instance of the deconvolution tool is ready to handle");
 
-    for (int i=0; i < _samples/2+1; i++){
+    for (int i=0; i < ticks; i++){
       // calculate the freq. corresponding to tick i
-      double freq = (_nyquist-_minfreq)*(i/(_samples/2.+1));
+      double freq = (nyquist-minfreq)*(i/ticks);
       // filter value at this frequency
       double filt = 1;
       if (freq < mu)
@@ -62,14 +63,21 @@ namespace signalana{
   void FilterFactory::GaussHighPassFilter(const double& mu, const double& sigma,
 					 signalana::Filter& filter){
 
+    // fft ticks
+    int ticks = filter.getSamples()/2+1;
+    // nyquist frequency
+    double nyquist = filter.getSamplingFrequency()/2;
+    // minimum frequency
+    double minfreq = filter.getSamplingFrequency()*2/filter.getSamples();
+
     // first check that the vector size is consistent
     // with the number of time-samples being used
-    if ((int)filter.size() != _samples/2+1)
+    if ((int)filter.size() != ticks)
       throw SignalAnaException("input vector size different than what this instance of the deconvolution tool is ready to handle");
 
-    for (int i=0; i < _samples/2+1; i++){
+    for (int i=0; i < ticks; i++){
       // calculate the freq. corresponding to tick i
-      double freq = (_nyquist-_minfreq)*(i/(_samples/2.+1));
+      double freq = (nyquist-minfreq)*(i/ticks);
       // filter value at this frequency
       double filt = 1;
       if (freq > mu)

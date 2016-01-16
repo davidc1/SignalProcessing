@@ -33,10 +33,7 @@ namespace signalana{
   public:
     
     /// Default constructor
-    FilterFactory(){ _samples=1; _sampling_rate=1; }
-    
-    /// constructor w/ input for filter parameters
-    FilterFactory(const int& samples, const double& sampling_rate);
+    FilterFactory(){}
     
     /// Default destructor
     ~FilterFactory (){}
@@ -54,19 +51,6 @@ namespace signalana{
     void GaussHighPassFilter(const double& mu, const double& sigma,
 			    signalana::Filter& filter);
 
-    
-
-  private:
-    
-    // two fundamental quantities needed to produce a filter:
-    // freq sampling and number of ticks samples
-    int _samples;
-    double _sampling_rate; // Hz
-    // nyquist frequency: maximum frequency for the specified sampling rate
-    double _nyquist;
-    // minimum frequency, given the sampling rate and number of time-samples recorded
-    double _minfreq;
-    
   };
 
 }
