@@ -13,6 +13,7 @@
 #pragma link C++ namespace signalana+;
 #pragma link C++ class signalana::Kernel+;
 #pragma link C++ class signalana::Filter+;
+#pragma link C++ class signalana::FilterFactory+;
 #pragma link C++ class signalana::DeconvolutionTool+;
 #pragma link C++ class signalana::DecoInterface+;
 #pragma link C++ class larlite::Deco+;
