@@ -18,6 +18,7 @@
 #include "Analysis/ana_base.h"
 #include "DecoInterface.h"
 #include "SignalAnaTypes.h"
+#include "FilterFactory.h"
 
 namespace larlite {
   /**
@@ -58,6 +59,9 @@ namespace larlite {
     void setDecoToolBeam(signalana::DecoInterface d)   { _deco_tool_beam = d; }
     void setDecoToolCosmic(signalana::DecoInterface d) { _deco_tool_cosmic = d; }
 
+    // set filter factory module to be used
+    void setFilterFactory(signalana::FilterFactory f) { _filter_factory = f; }
+
   protected:
 
     signalana::DecoInterface _deco_tool_beam;
@@ -80,6 +84,9 @@ namespace larlite {
     // time profiling tool
     signalana::Watch _decoLL_time_beam;
     signalana::Watch _decoLL_time_cosmic;
+    
+    // filter factory instance
+    signalana::FilterFactory _filter_factory;
 
   };
 }

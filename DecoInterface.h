@@ -32,6 +32,11 @@ namespace signalana {
 
     /// Default constructor
   DecoInterface() : DeconvolutionTool() { _baseline = 2048; _pmt_num = 32; }
+
+    /// Default constructor
+  DecoInterface(const int& num_chan, const int& N, const double& sampling_freq)
+    : DeconvolutionTool(num_chan,N,sampling_freq)
+      { _baseline = 2048; _pmt_num = 32; }
     
     /// Default destructor
     virtual ~DecoInterface() {}
@@ -47,6 +52,9 @@ namespace signalana {
     
     /// function to be used to save filters to output root file
     void writeFilters(TFile* _fout);
+
+    /// function to deconvolve kernels and save them
+    void deconvolveKernels(TFile* _fout);
 
     /// function to report profiling time
     double ReportTime() { return _deco_time.ReportTime(); }
@@ -74,6 +82,7 @@ namespace signalana {
     
     // number of PMTs
     int _pmt_num;
+
     
   };
 }

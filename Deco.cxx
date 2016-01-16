@@ -20,7 +20,6 @@ namespace larlite {
     _spe_kernel_file = "";
     _wiener_filter_file_beam = "";
     _wiener_filter_file_cosmic = "";
-    
 
   }
 
@@ -28,14 +27,14 @@ namespace larlite {
     
     // initialize deconvolution tool
     // cosmic window
-    _deco_tool_cosmic.PrepareFFTW3(_Nticks_cosmic);
+    _deco_tool_cosmic.PrepareFFTW3();
     _deco_tool_cosmic.Initialize(_Nticks_cosmic);
     // beam-gate window
-    _deco_tool_beam.PrepareFFTW3(_Nticks_beam);
+    _deco_tool_beam.PrepareFFTW3();
     _deco_tool_beam.Initialize(_Nticks_beam);
 
     // load kernels
-    std::vector< std::vector<double> > spe_kernels;
+    std::cout << "loading kernels..." << std::endl;
     TFile *f_kernel = new TFile(_spe_kernel_file.c_str());
     f_kernel->cd("specalib");
     for (int pmt=0; pmt < 32; pmt++){
@@ -46,41 +45,48 @@ namespace larlite {
       std::vector<double> spe;
       for (int i=0; i < hvals->GetNbinsX(); i++)
 	spe.push_back(hvals->GetBinContent(i+1)/hnorm->GetBinContent(i+1));
-      spe_kernels.push_back(spe);
+      _deco_tool_beam.LoadKernel(pmt,spe);
+      _deco_tool_cosmic.LoadKernel(pmt,spe);
       delete hvals;
       delete hnorm;
     }
     delete f_kernel;
-    _deco_tool_beam.LoadKernels(spe_kernels);
-    _deco_tool_cosmic.LoadKernels(spe_kernels);
+    std::cout << "...done" << std::endl;
 
     // load filters
+    std::cout << "loading filters..." << std::endl;
     // cosmic window
-    std::vector< std::vector<double> > wiener_filters_cosmic;
     TFile *f_filter_cosmic = new TFile(_wiener_filter_file_cosmic.c_str());
     for (int pmt=0; pmt < 32; pmt++){
       TH1D* h = (TH1D*)f_filter_cosmic->Get(Form("hFilterCosmicDiscriminator_pmt%02i",pmt));
       std::vector<double> filter(_Nticks_cosmic/2+1,0.);
       for (int i=0; i < h->GetNbinsX(); i++)
 	filter[i] = h->GetBinContent(i+1);
-      wiener_filters_cosmic.push_back(filter);
+      _filter_factory.LoadVectorFilter(filter,_deco_tool_cosmic.EditableFilter(pmt));
+      _filter_factory.GaussHighPassFilter(0.5e6,0.8e6,_deco_tool_beam.EditableFilter(pmt));
       delete h;
     }
     delete f_filter_cosmic;
-    _deco_tool_cosmic.LoadFilters(wiener_filters_cosmic);
     // beam-gate window
-    std::vector< std::vector<double> > wiener_filters_beam;
     TFile *f_filter_beam = new TFile(_wiener_filter_file_beam.c_str());
     for (int pmt=0; pmt < 32; pmt++){
+      _deco_tool_beam.LoadFilter(pmt);
       TH1D* h = (TH1D*)f_filter_beam->Get(Form("hFilter_pmt%02i",pmt));
       std::vector<double> filter(_Nticks_beam/2+1,0.);
       for (int i=0; i < h->GetNbinsX(); i++)
 	filter[i] = h->GetBinContent(i+1);
-      wiener_filters_beam.push_back(filter);
+      _filter_factory.LoadVectorFilter(filter,_deco_tool_beam.EditableFilter(pmt));
+      //_filter_factory.ConstantFracFilter(0.5,0,0.5e6,_deco_tool_beam.EditableFilter(pmt));
+      _filter_factory.GaussHighPassFilter(0.5e6,0.1e6,_deco_tool_beam.EditableFilter(pmt));
+      _filter_factory.GaussLowPassFilter(10e6,1e6,_deco_tool_beam.EditableFilter(pmt));
       delete h;
     }
     delete f_filter_beam;
-    _deco_tool_beam.LoadFilters(wiener_filters_beam);
+    std::cout << "...done" << std::endl;
+
+    // deconvolve the kernels to have a record
+    _deco_tool_beam.deconvolveKernels(_fout);
+    _deco_tool_cosmic.deconvolveKernels(_fout);
 
     // reset time-profiling tools
     _decoLL_time_beam.Reset();
@@ -142,6 +148,8 @@ namespace larlite {
     std::cout << "Time for each Deconvolution function call    [cosmic] : " << _deco_tool_cosmic.ReportTime()*1.e6 << " [usec]" << std::endl;
 
     _deco_tool_beam.writeKernels(_fout);
+    _deco_tool_cosmic.writeKernels(_fout);
+    _deco_tool_beam.writeFilters(_fout);
     _deco_tool_cosmic.writeFilters(_fout);
 
   

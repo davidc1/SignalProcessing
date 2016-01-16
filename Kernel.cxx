@@ -9,6 +9,10 @@ namespace signalana{
     : std::vector<double>(time_v)
   {}
 
+  Kernel::Kernel(const int& chnum, const int& samples, const double& sampling_freq)
+    : Channel(chnum,samples,sampling_freq)
+  {}
+
   void Kernel::Clear(){
     
     this->clear();

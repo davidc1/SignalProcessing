@@ -35,6 +35,9 @@ namespace signalana{
     /// Default constructor
     Kernel(){}
 
+    /// constructor specifying info
+    Kernel(const int& chnum, const int& samples, const double& sampling_freq);
+
     /// Kernel constructor w/ time-domain vector initializer
     Kernel(const std::vector<double>& time_v);
     

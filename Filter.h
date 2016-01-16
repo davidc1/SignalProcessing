@@ -34,8 +34,14 @@ namespace signalana{
     /// Default constructor
     Filter(){}
 
+    /// Kernel constructor w/ channel information
+    Filter(const int& chnum, const int& samples, const double& sampling_freq);
+    
     /// Kernel constructor w/ freq-domain vector initializer
     Filter(const std::vector<double>& time_v);
+
+    /// Kernel constructor w/ freq-domain vector initializer & channel info
+    Filter(const std::vector<double>& time_v, const int& ch);
     
     /// Default destructor
     ~Filter (){}

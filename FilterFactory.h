@@ -50,6 +50,10 @@ namespace signalana{
     /// gaussian-like high-pass filter
     void GaussHighPassFilter(const double& mu, const double& sigma,
 			    signalana::Filter& filter);
+    
+    /// constant fraction suppression in specific freq. range
+    void ConstantFracFilter(const double& frac, const double& fmin,
+			    const double& fmax, signalana::Filter& filter);
 
   };
 
