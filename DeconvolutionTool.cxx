@@ -93,8 +93,8 @@ namespace signalana{
       if (den != 0){
 	double e = (a*c+b*d)/den;
 	double f = (b*c-a*d)/den;
-	_sigfft[n][0] = e* _filter_v[ch][n];
-	_sigfft[n][1] = f* _filter_v[ch][n];
+	_sigfft[n][0] = e* _filter_v[22][n];
+	_sigfft[n][1] = f* _filter_v[22][n];
       }
       
     }// for all ticks -> applying division

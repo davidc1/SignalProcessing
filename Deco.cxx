@@ -75,10 +75,10 @@ namespace larlite {
       std::vector<double> filter(_Nticks_beam/2+1,0.);
       for (int i=0; i < h->GetNbinsX(); i++)
 	filter[i] = h->GetBinContent(i+1);
-      _filter_factory.LoadVectorFilter(filter,_deco_tool_beam.EditableFilter(pmt));
+      //_filter_factory.LoadVectorFilter(filter,_deco_tool_beam.EditableFilter(pmt));
       //_filter_factory.ConstantFracFilter(0.5,0,0.5e6,_deco_tool_beam.EditableFilter(pmt));
-      _filter_factory.GaussHighPassFilter(0.5e6,0.1e6,_deco_tool_beam.EditableFilter(pmt));
-      _filter_factory.GaussLowPassFilter(10e6,1e6,_deco_tool_beam.EditableFilter(pmt));
+      _filter_factory.GaussHighPassFilter(0.5e6,0.3e6,_deco_tool_beam.EditableFilter(pmt));
+      _filter_factory.GaussLowPassFilter(10e6,5e6,_deco_tool_beam.EditableFilter(pmt));
       delete h;
     }
     delete f_filter_beam;
